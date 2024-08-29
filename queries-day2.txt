@@ -1,4 +1,5 @@
-create table employee(
+#comments added
+create table jdbcemployee(
 eno int(5) primary key auto_increment,
 ename varchar(10) not null,
 gender varchar(1) not null check(gender in('m','f')),
@@ -178,3 +179,8 @@ USING ( ano )
 LEFT JOIN movie
 USING ( mno )
 where mname is null;
+
+
+create view DiwaliGifts
+as
+select ename,gender,age,city from emp
