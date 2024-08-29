@@ -1,0 +1,180 @@
+create table employee(
+eno int(5) primary key auto_increment,
+ename varchar(10) not null,
+gender varchar(1) not null check(gender in('m','f')),
+age int(3) not null check(age>=18),
+passport varchar(10) unique,
+workmode varchar(10) default 'wfo',
+salary int(5) check(salary>0));
+
+add city 
+alter table employee
+add city varchar(10);
+
+alter table employee
+modify salary int(10);
+
+insert into employee values(null,'Alice','f',23,'A123456','wfh',800,'Pune');
+
+insert into employee(ename,gender,age,passport,salary,city) values('Ben','m',25,'B123456',900,'Pune');
+
+rename table employee to emp
+
+update emp
+set salary=salary+300
+where ename = 'Vinesh';
+
+update emp
+set salary=salary + 0.1*salary
+where age>=50;
+
+
+update emp
+set salary=salary + 0.05*salary
+where city in('Pune','Mumbai','Jaipur');
+
+SELECT DISTINCT city
+FROM emp
+
+SELECT ename
+FROM emp
+WHERE gender = 'm'
+AND salary >=2000
+
+SELECT ename
+FROM emp
+WHERE city NOT
+IN (
+'Bangalore'
+)
+
+SELECT count( * ) AS 'Number of Employee'
+FROM emp
+WHERE city LIKE 'Pune';
+
+
+SELECT city, avg( salary )
+FROM emp
+GROUP BY city
+order by  avg( salary ) desc;
+
+SELECT city, avg( salary )
+FROM emp
+GROUP BY city
+having  avg( salary )>=2500
+ORDER BY avg( salary ) DESC
+
+
+SELECT ename
+FROM emp
+WHERE 
+city not in('Pune')
+and
+salary > ANY(
+SELECT salary
+FROM emp
+WHERE city LIKE 'Pune'
+)
+
+
+SELECT ename
+FROM emp
+WHERE 
+city not in('Pune')
+and
+salary > ALL(
+SELECT salary
+FROM emp
+WHERE city LIKE 'Pune'
+)
+
+
+SELECT 
+CASE
+WHEN age BETWEEN 18 AND 19 THEN 'Teen'
+WHEN age BETWEEN 20 AND 30 THEN 'Youth'
+WHEN age BETWEEN 31 AND 40 THEN 'Mid Age'
+ELSE 'Seniors'
+END AS Category, count(*) as 'Number of Employee'
+from emp
+group by Category
+order by count(*) desc;
+
+
+SELECT sname
+FROM state
+WHERE state.cmno = (
+SELECT chiefminister.cmno
+FROM chiefminister
+WHERE cmage = (
+SELECT min( cmage )
+FROM chiefminister ) )
+
+
+create table actor(
+ano int(3) auto_increment,
+aname varchar(10),
+age int(3),
+primary key(ano)
+);
+
+create table movie(
+mno int(3) auto_increment,
+mname varchar(10),
+ryear int(3),
+primary key(mno)
+);
+
+create table imdb(
+ano int(3),
+mno int(3),
+fees int(3),
+foreign key(ano) references actor(ano),
+foreign key(mno) references movie(mno)
+);
+
+
+insert into actor(aname,age) values
+('SRK',57),
+('AK',52),
+('SK',57),
+('DP',40);
+
+insert into movie(mname,ryear) values
+('CE',2010),
+('KA',1995),
+('RR',2009);
+
+insert into imdb values
+(1,1,500),
+(1,2,100),
+(4,1,300),
+(2,3,700),
+(3,2,120);
+
+
+SELECT mname, count(*) as 'Number of Actors'
+FROM actor
+JOIN imdb
+USING ( ano )
+JOIN movie
+USING ( mno )
+group by mname;
+
+
+select ryear, count(distinct(mname))
+from movie 
+join imdb
+using(mno)
+join actor
+using(ano)
+group by ryear;
+
+
+SELECT aname
+FROM actor
+LEFT JOIN imdb
+USING ( ano )
+LEFT JOIN movie
+USING ( mno )
+where mname is null;

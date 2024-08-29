@@ -1,0 +1,344 @@
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1100         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         5 Elcid            1000         30                                     
+         6 Frank            1000         10                                     
+
+SQL> --write a function to display the salary of Ben
+SQL> declare
+  2  empsal number(5);
+  3  begin
+  4  select salary into empsal
+  5  from empb2
+  6  where ename like 'Ben';
+  7  dbms_output.put_line(empsal);
+  8  end;
+  9  /
+
+PL/SQL procedure successfully completed.
+
+SQL> set serveroutput on;
+SQL> /
+1100                                                                            
+
+PL/SQL procedure successfully completed.
+
+SQL> create or replace function function1
+  2  return number
+  3  is
+  4  empsal number(5);
+  5  begin
+  6  select salary into empsal
+  7  from empb2
+  8  where ename like 'Ben';
+  9  return empsal;
+ 10  end;
+ 11  /
+
+Function created.
+
+SQL> select function1 from dual;
+
+ FUNCTION1                                                                      
+----------                                                                      
+      1100                                                                      
+
+SQL> --write a plsql function to accept empname from user and display salary of that emp
+SQL> create or replace function function2(empname in varchar2)
+  2  return number
+  3  is
+  4  empsal number(5);
+  5  begin
+  6  select salary into empsal
+  7  from empb2
+  8  where ename like empname
+  9  return empsal;
+ 10  end;
+ 11  /
+
+Warning: Function created with compilation errors.
+
+SQL> show errors;
+Errors for FUNCTION FUNCTION2:
+
+LINE/COL ERROR                                                                  
+-------- -----------------------------------------------------------------      
+6/1      PL/SQL: SQL Statement ignored                                          
+8/26     PL/SQL: ORA-00933: SQL command not properly ended                      
+SQL> create or replace function function2(empname in varchar2)
+  2  return number
+  3  is
+  4  empsal number(5);
+  5  begin
+  6  select salary into empsal
+  7  from empb2
+  8  where ename like empname;
+  9  return empsal;
+ 10  end;
+ 11  /
+
+Function created.
+
+SQL> select function2('Chris') from dual;
+
+FUNCTION2('CHRIS')                                                              
+------------------                                                              
+              1100                                                              
+
+SQL> declare
+  2  empname varchar2(10);
+  3  begin
+  4  /
+begin
+    *
+ERROR at line 3:
+ORA-06550: line 3, column 5: 
+PLS-00103: Encountered the symbol "end-of-file" when expecting one of the 
+following: 
+( begin case declare exit for goto if loop mod null pragma 
+raise return select update while with <an identifier> 
+<a double-quoted delimited-identifier> <a bind variable> << 
+continue close current delete fetch lock insert open rollback 
+savepoint set sql execute commit forall merge pipe purge 
+
+
+SQL> declare
+  2  empname varchar2(10);
+  3  empsal number(5);
+  4  begin
+  5  empname :='&EmployeeName';
+  6  empsal:=function2(empname);
+  7  dbms_output.put_line(empsal);
+  8  end;
+  9  /
+Enter value for employeename: Ben
+old   5: empname :='&EmployeeName';
+new   5: empname :='Ben';
+1100                                                                            
+
+PL/SQL procedure successfully completed.
+
+SQL> --write a plsql procedure display the name and age of Ben
+SQL> create or replace procedure procedure1
+  2  is
+  3  empname empb2.ename%type;
+  4  empage empb2.age%type;
+  5  begin
+  6  select ename,age into empname,empage
+  7  from empb2
+  8  where ename like 'Ben';
+  9  dbms_output.put_line('Employee name is '||empname);
+ 10  dbms_output.put_line('Employee age is '||empage);
+ 11  end;
+ 12  /
+
+Warning: Procedure created with compilation errors.
+
+SQL> show errors;
+Errors for PROCEDURE PROCEDURE1:
+
+LINE/COL ERROR                                                                  
+-------- -----------------------------------------------------------------      
+4/8      PL/SQL: Item ignored                                                   
+4/14     PLS-00302: component 'AGE' must be declared                            
+6/1      PL/SQL: SQL Statement ignored                                          
+6/14     PL/SQL: ORA-00904: "AGE": invalid identifier                           
+10/1     PL/SQL: Statement ignored                                              
+10/42    PLS-00320: the declaration of the type of this expression is           
+         incomplete or malformed                                                
+                                                                                
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1100         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         5 Elcid            1000         30                                     
+         6 Frank            1000         10                                     
+
+SQL> --write a plsql procedure display the name and salary of Ben
+SQL> create or replace procedure procedure1
+  2  is
+  3  empname empb2.ename%type;
+  4  empsal empb2.salary%type;
+  5  begin
+  6  select ename,salary into empname,empsal
+  7  from empb2
+  8  where ename like 'Ben';
+  9  dbms_output.put_line('Employee name is '||empname);
+ 10  dbms_output.put_line('Employee salary is '||empsal);
+ 11  end;
+ 12  /
+
+Procedure created.
+
+SQL> exexute procedure1;
+SP2-0734: unknown command beginning "exexute pr..." - rest of line ignored.
+SQL> execute procedure1;
+Employee name is Ben                                                            
+Employee salary is 1100                                                         
+
+PL/SQL procedure successfully completed.
+
+SQL> -- procedure  City, Percentage bonus
+SQL> create or replace procedure procedure2(
+  2  empdno in empb2.dno%type,
+  3  incper in number)
+  4  is
+  5  begin
+  6  update empb2
+  7  set salary=salary + (incpar/100)*salary
+  8  where dno=empdno;
+  9  dbms_output.put_line('Records Updated');
+ 10  end;
+ 11  /
+
+Warning: Procedure created with compilation errors.
+
+SQL> show errors;
+Errors for PROCEDURE PROCEDURE2:
+
+LINE/COL ERROR                                                                  
+-------- -----------------------------------------------------------------      
+6/1      PL/SQL: SQL Statement ignored                                          
+7/22     PL/SQL: ORA-00904: "INCPAR": invalid identifier                        
+SQL> create or replace procedure procedure2(
+  2  empdno in empb2.dno%type,
+  3  incper in number)
+  4  is
+  5  begin
+  6  update empb2
+  7  set salary=salary + (incper/100)*salary
+  8  where dno=empdno;
+  9  dbms_output.put_line('Records Updated');
+ 10  end;
+ 11  /
+
+Procedure created.
+
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1100         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         5 Elcid            1000         30                                     
+         6 Frank            1000         10                                     
+
+SQL> execute procedure2;
+BEGIN procedure2; END;
+
+      *
+ERROR at line 1:
+ORA-06550: line 1, column 7: 
+PLS-00306: wrong number or types of arguments in call to 'PROCEDURE2' 
+ORA-06550: line 1, column 7: 
+PL/SQL: Statement ignored 
+
+
+SQL> execute procedure2(10,50);
+Records Updated                                                                 
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1650         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         5 Elcid            1000         30                                     
+         6 Frank            1500         10                                     
+
+SQL> --write a pl sql procedure , pass the dno and delete records of emps working in that dept
+SQL> create or replace procedure procedure3(
+  2  empdno in empb2.dno%type)
+  3  is
+  4  begin
+  5  delete from empb2 where dno=empdno;
+  6  exception
+  7  when NO_DATA_FOUND then
+  8  RAISE_APPLICATION_ERROR('-20111','Dept does not exist');
+  9  end;
+ 10  /
+
+Procedure created.
+
+SQL> execute procedure3(40);
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1650         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         5 Elcid            1000         30                                     
+         6 Frank            1500         10                                     
+
+SQL> execute procedure3(30);
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from empb2;
+
+       ENO ENAME          SALARY        DNO                                     
+---------- ---------- ---------- ----------                                     
+         2 Ben              1650         10                                     
+         3 Chris            1100         20                                     
+         4 Dom              1100         20                                     
+         6 Frank            1500         10                                     
+
+SQL> decalre
+SP2-0042: unknown command "decalre" - rest of line ignored.
+SQL> declare
+  2  cursor c1
+  3  is
+  4  
+  5  select ename,salary
+  6  from empb2
+  7  where dno=10;
+  8  begin
+  9  for x in c1
+ 10  loop
+ 11  dbms_output.put_line(x.ename || x.salary)
+ 12  end loop;
+ 13  end;
+ 14  /
+end loop;
+*
+ERROR at line 12:
+ORA-06550: line 12, column 1: 
+PLS-00103: Encountered the symbol "END" when expecting one of the following: 
+:= . ( % ; 
+The symbol ";" was substituted for "END" to continue. 
+
+
+SQL> declare
+  2  cursor c1
+  3  is
+  4  select ename,salary
+  5  from empb2
+  6  where dno=10;
+  7  begin
+  8  for x in c1
+  9  loop
+ 10  dbms_output.put_line(x.ename || x.salary);
+ 11  end loop;
+ 12  end;
+ 13  /
+Ben1650                                                                         
+Frank1500                                                                       
+
+PL/SQL procedure successfully completed.
+
+SQL> spool off
